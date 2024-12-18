@@ -1,0 +1,138 @@
+
+#include <Servo.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+Servo myservo;  // create servo object to control a servo
+// twelve servo objects can be created on most boards
+long duration;
+int distance;
+    // variable to store the servo position
+#define m1 2
+#define m2 3
+#define m3 4
+#define m4 5
+
+#define echoPin 6
+#define trigPin 7
+
+
+#define pot A0
+#define rpi 8
+int a,b,c,d;
+
+
+int pos = 0; 
+void setup() {
+  // put your setup code here, to run once:
+Serial.begin(9600);
+
+ lcd.begin();
+
+  // Turn on the blacklight and print a message.
+  lcd.backlight();
+  
+    lcd.setCursor(2,0);
+  lcd.print("AI DRIVEN ");
+  lcd.setCursor(4,1);
+  lcd.print("AGRIBOT");
+
+ myservo.attach(9);
+ pinMode(m1,OUTPUT);
+ pinMode(m2,OUTPUT);
+ pinMode(m3,OUTPUT);
+ pinMode(m4,OUTPUT);
+ pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT);
+   // Sets the trigPin as an Output
+  pinMode(rpi, INPUT);
+ 
+ 
+}
+
+void loop() {
+  d=digitalRead(rpi);
+  b=analogRead(pot);
+ 
+  // put your main code here, to run repeatedly:
+  
+     digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  // Calculating the distance
+  distance = duration * 0.034 / 2;
+  // Prints the distance on the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  delay(50);
+  if(distance>=30)
+  {
+//    Serial.print("over dist");
+//  if(d==1)
+//  {
+//    Serial.print("d==1");
+//    
+//    a++;
+//    delay(500);
+//    
+//  }
+//  if(d==0)
+//  {
+//    Serial.print("d==0");
+//    a=0;
+//  }
+//  if(a>=1)
+//  {
+    Serial.print("a>=1");
+    digitalWrite(m1,1);
+    digitalWrite(m2,0);
+    digitalWrite(m3,1);
+    digitalWrite(m4,0);
+    delay(1000);
+    digitalWrite(m1,0);
+    digitalWrite(m2,0);
+    digitalWrite(m3,0);
+    digitalWrite(m4,0);
+      delay(1000);
+      
+  for (pos = 180; pos >= 80; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15 ms for the servo to reach the position
+  }
+  for (pos = 80; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(15);                       // waits 15 ms for the servo to reach the position
+  }
+        delay(1000);
+//
+//  }
+//  if(a==0)
+//  {Serial.print("a==0");
+//    myservo.write(180);
+//    digitalWrite(m1,0);
+//    digitalWrite(m2,0);
+//    digitalWrite(m3,0);
+//    digitalWrite(m4,0);
+//       myservo.write(180);
+//  }
+  }
+  if(distance<=30)
+  {
+    Serial.print("distance low");
+
+    digitalWrite(m1,0);
+    digitalWrite(m2,0);
+    digitalWrite(m3,0);
+    digitalWrite(m4,0);
+  
+//    a=0;
+  }
+}
